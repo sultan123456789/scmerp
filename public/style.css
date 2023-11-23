@@ -579,7 +579,7 @@ main .histories h2 {
 }
 /* CSS for the table container */
 .table-container {
-  max-height: 350px; /* Sesuaikan dengan tinggi maksimum yang Anda inginkan */
+  max-height: 1000px; /* Sesuaikan dengan tinggi maksimum yang Anda inginkan */
   overflow-y: auto;
 }
 
