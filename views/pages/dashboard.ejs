@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BLOXCHAIN</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Symbols+Sharp"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <aside>
+        <div class="top">
+          <div class="logo">
+            <img src="https://dhoto.lecturer.pens.ac.id/hcm-lab/logo%20biru.png" alt="" />
+            <h2>Bloxchain</h2>
+          </div>
+          <div class="close" id="close-btn">
+            <span class="material-symbols-sharp"> close </span>
+          </div>
+        </div>
+        <div class="sidebar">
+          <a href="#" class="active">
+            <span class="material-symbols-sharp"> dashboard </span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="#" class="inactive">
+            <span class="material-symbols-sharp"> dashboard </span>
+            <h3>blockchain</h3>
+          </a>
+        </div>
+      </aside>
+      <main>
+        <h1>Supply Chain Monitoring</h1>
+        <div class="connection-status">
+          <h3>Connection Status: <span class="status">Disconnected</span></h3>
+        </div>
+        <div class="insights">
+          <div class="temperature">
+            <div class="middle">
+              <div class="left">
+                <h3>Temperature</h3>
+                <h1 id="temperature"></h1>
+              </div>
+              <div class="icon">
+                <span class="material-symbols-sharp"> device_thermostat </span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- End of temperature -->
+          <div class="humidity">
+            <div class="middle">
+              <div class="left">
+                <h3>Humidity</h3>
+                <h1 id="humidity"></h1>
+              </div>
+              <div class="icon">
+                <span class="material-symbols-sharp">
+                  humidity_percentage
+                </span>
+              </div>
+            </div>
+          </div>
+          <!-- End of humidity -->
+          <div class="pressure">
+            <div class="middle">
+              <div class="left">
+                <h3>Pressure</h3>
+                <h1 id="pressure"></h1>
+              </div>
+              <div class="icon">
+                <span class="material-symbols-sharp"> speed </span>
+              </div>
+            </div>
+          </div>
+          <!-- End of pressure -->
+          <div class="altitude">
+            <div class="middle">
+              <div class="left">
+                <h3>Approx Altitude</h3>
+                <h1 id="altitude"></h1>
+              </div>
+              <div class="icon">
+                <span class="material-symbols-sharp"> altitude </span>
+              </div>
+            </div>
+          </div>
+          <!-- End of altitude -->
+          
+        </div>
+      
+       
+        <!-- End of Insights -->
+        <div class="histories">
+          <h2>Historical Charts</h2>
+          <div class="history-charts">
+            <div id="temperature-history" class="history-divs"></div>
+            <div id="humidity-history" class="history-divs"></div>
+            <div id="pressure-history" class="history-divs"></div>
+            <div id="altitude-history" class="history-divs"></div>
+          </div>
+          <div class="sensor-data">
+           <br> <h2>Sensor Data Table</h2>
+<div class="table-container">
+  
+  <table id="data-table">
+    <thead>
+      <tr>
+        <th>Waktu</th>
+        <th >Suhu (°C)</th>
+        <th>Kelembaban (%)</th>
+        <th>Tekanan (hPa)</th>
+        <th>Ketinggian (m)</th>
+        <th>Hash</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Data rows will be added here dynamically -->
+      <th></th>
+        <th ></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+    </tbody>
+  </table>
+  
+</div>
+
+          
+        </div>
+      </main>
+      <div class="right">
+        <div class="top">
+          <button id="menu-btn">
+            <span class="material-symbols-sharp"> menu </span>
+          </button>
+          <div class="theme-toggler">
+            <span class="material-symbols-sharp active"> light_mode </span>
+            <span class="material-symbols-sharp"> dark_mode </span>
+          </div>
+        </div>
+        <!-- End of top -->
+        <div class="gauge-charts">
+          <h2>Gauge Charts</h2>
+          <div class="item">
+            <div id="temperature-gauge"></div>
+          </div>
+          <div class="item">
+            <div id="humidity-gauge"></div>
+          </div>
+          <div class="item">
+            <div id="pressure-gauge"></div>
+          </div>
+          <div class="item">
+            <div id="altitude-gauge"></div>
+          </div>
+        </div>
+
+        
+
+      </div>
+    </div>
+    
+    <script type="module" src="./index.js"></script>
+    <script type="module" src="./mqttService.js"></script>
+    <!-- <script>
+      // Function to add a new row to the table
+      function addDataToTable(data) {
+          const tableBody = document.querySelector("#sensor-data tbody");
+          const newRow = document.createElement("tr");
+  
+          // Create and populate the table cells
+          const waktuCell = document.createElement("td");
+          waktuCell.textContent = data.waktu;
+          newRow.appendChild(waktuCell);
+  
+          const suhuCell = document.createElement("td");
+          suhuCell.textContent = data.suhu;
+          newRow.appendChild(suhuCell);
+  
+          const kelembabanCell = document.createElement("td");
+          kelembabanCell.textContent = data.kelembaban;
+          newRow.appendChild(kelembabanCell);
+  
+          const tekananCell = document.createElement("td");
+          tekananCell.textContent = data.tekanan;
+          newRow.appendChild(tekananCell);
+  
+          const ketinggianCell = document.createElement("td");
+          ketinggianCell.textContent = data.ketinggian;
+          newRow.appendChild(ketinggianCell);
+  
+          const hashCell = document.createElement("td");
+          hashCell.textContent = data.hash;
+          newRow.appendChild(hashCell);
+  
+          // Append the new row to the table
+          tableBody.appendChild(newRow);
+      }
+  
+      // Simulated MQTT data (replace with actual MQTT data)
+      const mqttData = [
+          {
+              waktu: "2023-10-30 12:00",
+              suhu: "25.5",
+              kelembaban: "45",
+              tekanan: "1015",
+              ketinggian: "300",
+              hash: "abc123....."
+          },
+          {
+              waktu: "2023-10-30 12:15",
+              suhu: "26.0",
+              kelembaban: "44",
+              tekanan: "1014",
+              ketinggian: "305",
+              hash: "def456....."
+          },
+          {
+            waktu: "2023-10-30 12:00",
+            suhu: "25.5",
+            kelembaban: "45",
+            tekanan: "1015",
+            ketinggian: "300",
+            hash: "abc123....."
+        },
+        {
+            waktu: "2023-10-30 12:15",
+            suhu: "26.0",
+            kelembaban: "44",
+            tekanan: "1014",
+            ketinggian: "305",
+            hash: "def456....."
+        },{
+          waktu: "2023-10-30 12:00",
+          suhu: "25.5",
+          kelembaban: "45",
+          tekanan: "1015",
+          ketinggian: "300",
+          hash: "abc123....."
+      },
+      {
+          waktu: "2023-10-30 12:15",
+          suhu: "26.0",
+          kelembaban: "44",
+          tekanan: "1014",
+          ketinggian: "305",
+          hash: "def456....."
+      },{
+        waktu: "2023-10-30 12:00",
+        suhu: "25.5",
+        kelembaban: "45",
+        tekanan: "1015",
+        ketinggian: "300",
+        hash: "abc123....."
+    },
+    {
+        waktu: "2023-10-30 12:15",
+        suhu: "26.0",
+        kelembaban: "44",
+        tekanan: "1014",
+        ketinggian: "305",
+        hash: "def456....."
+    },{
+      waktu: "2023-10-30 12:00",
+      suhu: "25.5",
+      kelembaban: "45",
+      tekanan: "1015",
+      ketinggian: "300",
+      hash: "abc123....."
+  },
+  {
+      waktu: "2023-10-30 12:15",
+      suhu: "26.0",
+      kelembaban: "44",
+      tekanan: "1014",
+      ketinggian: "305",
+      hash: "def456....."
+  },{
+    waktu: "2023-10-30 12:00",
+    suhu: "25.5",
+    kelembaban: "45",
+    tekanan: "1015",
+    ketinggian: "300",
+    hash: "abc123....."
+},
+{
+    waktu: "2023-10-30 12:15",
+    suhu: "26.0",
+    kelembaban: "44",
+    tekanan: "1014",
+    ketinggian: "305",
+    hash: "def456....."
+},
+{
+  waktu: "2023-10-30 12:15",
+  suhu: "26.0",
+  kelembaban: "44",
+  tekanan: "1014",
+  ketinggian: "305",
+  hash: "def456....."
+},
+{
+  waktu: "2023-10-30 12:15",
+  suhu: "26.0",
+  kelembaban: "44",
+  tekanan: "1014",
+  ketinggian: "305",
+  hash: "def456....."
+},
+{
+  waktu: "2023-10-30 12:15",
+  suhu: "26.0",
+  kelembaban: "44",
+  tekanan: "1014",
+  ketinggian: "305",
+  hash: "def456....."
+},
+{
+  waktu: "2023-10-30 12:15",
+  suhu: "26.0",
+  kelembaban: "44",
+  tekanan: "1014",
+  ketinggian: "305",
+  hash: "def456....."
+},
+{
+  waktu: "2023-10-30 12:15",
+  suhu: "26.0",
+  kelembaban: "44",
+  tekanan: "1014",
+  ketinggian: "305",
+  hash: "def456....."
+},
+{
+  waktu: "2023-10-30 12:15",
+  suhu: "26.0",
+  kelembaban: "44",
+  tekanan: "1014",
+  ketinggian: "305",
+  hash: "def456....."
+},
+{
+  waktu: "2023-10-30 12:15",
+  suhu: "26.0",
+  kelembaban: "44",
+  tekanan: "1014",
+  ketinggian: "305",
+  hash: "def456....."
+},
+
+          // Add more data objects here
+      ];
+  
+      // Add MQTT data to the table
+      mqttData.forEach((data) => {
+          addDataToTable(data);
+      });
+  </script> -->
+  
+  </body>
+</html>
