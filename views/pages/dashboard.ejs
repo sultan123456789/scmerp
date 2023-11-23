@@ -9,9 +9,18 @@
       href="https://fonts.googleapis.com/icon?family=Material+Symbols+Sharp"
       rel="stylesheet"
     />
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.js"></script>
+   
+    <link href="https://unpkg.com/mapbox-gl@2.6.1/dist/mapbox-gl.css" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <link rel="stylesheet" href="./style.css" />
+    
+    
   </head>
   <body>
     <div class="container">
@@ -30,10 +39,7 @@
             <span class="material-symbols-sharp"> dashboard </span>
             <h3>Dashboard</h3>
           </a>
-          <a href="#" class="inactive">
-            <span class="material-symbols-sharp"> dashboard </span>
-            <h3>blockchain</h3>
-          </a>
+         
         </div>
       </aside>
       <main>
@@ -72,7 +78,7 @@
           <div class="pressure">
             <div class="middle">
               <div class="left">
-                <h3>Pressure</h3>
+                <h3>Longitude</h3>
                 <h1 id="pressure"></h1>
               </div>
               <div class="icon">
@@ -84,7 +90,7 @@
           <div class="altitude">
             <div class="middle">
               <div class="left">
-                <h3>Approx Altitude</h3>
+                <h3>latitude</h3>
                 <h1 id="altitude"></h1>
               </div>
               <div class="icon">
@@ -116,8 +122,8 @@
         <th>Waktu</th>
         <th >Suhu (°C)</th>
         <th>Kelembaban (%)</th>
-        <th>Tekanan (hPa)</th>
-        <th>Ketinggian (m)</th>
+        <th>Tekanan (long)</th>
+        <th>Ketinggian (lat)</th>
         <th>Hash</th>
       </tr>
     </thead>
@@ -131,9 +137,16 @@
         <th></th>
     </tbody>
   </table>
-  
+   
+     
+      
+     
+    
 </div>
-
+<section>
+  <!-- Konten lainnya -->
+  <div id="map"></div>
+</section>
           
         </div>
       </main>
@@ -167,8 +180,9 @@
         
 
       </div>
+      
     </div>
-    
+   
     <script type="module" src="./index.js"></script>
     <script type="module" src="./mqttService.js"></script>
     <!-- <script>

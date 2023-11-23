@@ -608,3 +608,27 @@ th {
   position: sticky;
   top: 0;
 }
+map1 {
+ 
+}
+
+section {
+  padding :100px 100px;
+  flex: 1; /* Membagi ruang secara proporsional */
+  margin-right: 20px; /* Memberikan ruang antara peta dan konten lainnya */
+  margin-left: 200px;
+  height: 1000px;
+  margin: 20px;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  display: flex; /* Menggunakan flexbox untuk mengatur layout */
+}
+
+#map {
+  width: 100%; /* Mengisi seluruh lebar dari container */
+  height: 100%; /* Mengisi seluruh tinggi dari container */
+  border: 1px solid #ddd; /* Menambahkan border untuk kejelasan */
+  padding :100px 100px;
+}

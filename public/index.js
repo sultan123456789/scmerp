@@ -396,8 +396,8 @@ function updateBoxes(temperature, humidity, pressure, altitude) {
 
   temperatureDiv.innerHTML = temperature + " C";
   humidityDiv.innerHTML = humidity + " %";
-  pressureDiv.innerHTML = pressure + " hPa";
-  altitudeDiv.innerHTML = altitude + " m";
+  pressureDiv.innerHTML = pressure + "";
+  altitudeDiv.innerHTML = altitude + "";
 }
 
 function updateGauge(temperature, humidity, pressure, altitude) {
@@ -553,3 +553,152 @@ function initializeMQTTConnection(mqttServer, mqttTopic) {
   mqttService.subscribe(mqttTopic);
 }
 
+mapboxgl.accessToken =
+  "pk.eyJ1Ijoic3VsdGFuMTMxMDIwMDAiLCJhIjoiY2xkOTI4MWpkMDR3MzNycGt3ZXFhOHZpNyJ9.lFhwBshO7cHaGbyQ8mXlAg";
+
+const userLocation = {
+  lat: 0,
+  lng: 0,
+};
+var options = {
+  enableHighAccuracy: true,
+  timeout: 5000,
+  maximumAge: 0,
+};
+
+let map = new mapboxgl.Map({
+  container: "map",
+  style: "mapbox://styles/mapbox/streets-v12",
+  zoom: 2,
+  center: [userLocation.lng, userLocation.lat],
+});
+
+function showPosition(position) {
+  userLocation.lat = position.coords.latitude;
+  userLocation.lng = position.coords.longitude;
+  map.jumpTo({
+    center: [userLocation.lng, userLocation.lat],
+    zoom: 7,
+    pitch: 45,
+    bearing: 0,
+  });
+
+  const userMarker = new mapboxgl.Marker({ color: "#BFDB38" })
+    .setLngLat([userLocation.lng, userLocation.lat])
+    .addTo(map)
+    .setPopup(
+      new mapboxgl.Popup().setHTML(
+        `<p><b>User Location:</b> ${(userLocation.lng, userLocation.lat)}</p>`
+      )
+    ); // add popup
+  userMarker.togglePopup();
+}
+
+function error(err) {
+  console.log(`ERROR(${err.code}): ${err.message}`);
+}
+
+navigator.geolocation.getCurrentPosition(showPosition, error);
+
+map.on("load", async () => {
+  // Get the initial location of the International Space Station (ISS).
+  //   const geojson = await getLocation();
+  // Add the ISS location as a source.
+  //   map.addSource("iss", {
+  //     type: "geojson",
+  //     data: geojson,
+  //   });
+  map.addControl(
+    new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      trackUserLocation: true,
+      showUserHeading: true,
+    })
+  );
+
+  const nav = new mapboxgl.NavigationControl({
+    visualizePitch: true,
+  });
+  map.addControl(nav, "bottom-right");
+
+  // Update the source from the API every 2 seconds.
+  const updateSource = setInterval(async () => {
+    const geojson = await getLocation(updateSource);
+    // console.log("geojson ==> ", geojson);
+    // map.getSource("iss").setData(geojson);
+  }, 5000);
+
+  async function getLocation(updateSource) {
+    // Make a GET request to the API and return the location of the ISS.
+    try {
+      // connection option
+      const options = {
+        clean: true, // retain session
+        connectTimeout: 4000, // Timeout period
+      };
+
+      const connectUrl = "ws://103.106.72.182:8885";
+      const client = mqtt.connect(connectUrl, options);
+      client.on("connect", function () {
+        // console.log("Connected");
+        // Subscribe to a topic
+        client.subscribe("testing/lorago", function (err) {
+          if (!err) {
+            // Publish a message to a topic
+            // client.publish("test", "Hello mqtt");
+          }
+        });
+      });
+
+      let dataLat = 0;
+      let dataLon = 0;
+      // Receive messages
+      client.on("message", function (topic, message) {
+        // message is Buffer
+        console.log(message.toString());
+        const { deviceID, latitude, longitude } = JSON.parse(
+          message.toString()
+        );
+        dataLat = latitude;
+        dataLon = longitude;
+        console.log(latitude, longitude);
+        const shipMarker = new mapboxgl.Marker({ color: "#F55050" })
+          .setLngLat([dataLon, dataLat])
+          .addTo(map)
+          .setPopup(
+            new mapboxgl.Popup().setHTML(
+              `<p><b>Container location:</b> ${
+                (userLocation.lng, userLocation.lat)
+              }</p>`
+            )
+          );
+        // Fly the map to the location.
+        map.flyTo({
+          center: [dataLon, dataLat],
+          speed: 0.5,
+        });
+        client.end();
+      });
+
+      // Return the location of the ISS as GeoJSON.
+      return {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [dataLon, dataLat],
+            },
+          },
+        ],
+      };
+    } catch (err) {
+      // If the updateSource interval is defined, clear the interval to stop updating the source.
+      if (updateSource) clearInterval(updateSource);
+      throw new Error(err);
+    }
+  }
+});
